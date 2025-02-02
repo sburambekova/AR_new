@@ -18,7 +18,7 @@ const App = () => {
     <div style={{ textAlign: "center", marginTop: "20px" }}>
       <h1>Scan QR for AR Experiment</h1>
       <QRCodeCanvas 
-        value="https://sburambekova.github.io/AR_new/ar-text-app/ar.html" 
+        value="https://sburambekova.github.io/AR_new/ar.html" 
         size={200} 
       />
       <p>Scan this QR code to see AR text without a marker.</p>
