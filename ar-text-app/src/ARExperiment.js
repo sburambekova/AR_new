@@ -1,75 +1,47 @@
-import React, { useEffect } from "react";
-import { QRCodeCanvas } from "qrcode.react";
+document.addEventListener('DOMContentLoaded', () => {
+    // Wait for A-Frame to initialize
+    window.addEventListener('arjs-nft-loaded', () => {
+        // Remove loading message
+        document.getElementById('loading').remove();
 
-const ARExperiment = () => {
-  useEffect(() => {
-    // Ensure the scene is loaded before adding elements
-    const sceneEl = document.querySelector("a-scene");
-    if (sceneEl) {
-      sceneEl.addEventListener("loaded", () => {
-        const gridEl = document.getElementById("number-grid");
-        gridEl.innerHTML = ""; // Clear old elements
+        // Create numbers container
+        const numbersContainer = document.createElement('a-entity');
+        numbersContainer.setAttribute('id', 'numbers-container');
+        numbersContainer.setAttribute('position', '0 0 -1');
+        document.querySelector('a-scene').appendChild(numbersContainer);
 
-        const rows = 10;
-        const cols = 10;
-        const spacing = 0.5;
+        // Number configuration
+        const config = {
+            totalNumbers: 50,
+            radius: 1.2,
+            baseScale: 0.25,
+            rotationSpeed: 0.1
+        };
 
-        for (let i = 0; i < rows; i++) {
-          for (let j = 0; j < cols; j++) {
-            const number = i * cols + j + 1;
-            const textEl = document.createElement("a-text");
-
-            // Position calculation
-            const x = (j - cols / 2) * spacing;
-            const y = (rows / 2 - i) * spacing;
-            const z = -2; // Position slightly in front of the camera
-
-            textEl.setAttribute("position", `${x} ${y} ${z}`);
-            textEl.setAttribute("value", number);
-            textEl.setAttribute("align", "center");
-            textEl.setAttribute("color", "#FF0000");
-            textEl.setAttribute("scale", "0.8 0.8 0.8");
-            gridEl.appendChild(textEl);
-          }
+        // Create numbers in circular pattern
+        for(let i = 0; i < config.totalNumbers; i++) {
+            const angle = (i / config.totalNumbers) * Math.PI * 2;
+            const x = Math.cos(angle) * config.radius;
+            const y = Math.sin(angle) * config.radius;
+            
+            const number = document.createElement('a-text');
+            number.setAttribute('value', i + 1);
+            number.setAttribute('position', `${x} ${y} 0`);
+            number.setAttribute('color', `hsl(${(i/config.totalNumbers)*360}, 100%, 50%)`);
+            number.setAttribute('scale', `${config.baseScale} ${config.baseScale} ${config.baseScale}`);
+            number.setAttribute('look-at', '[camera]');
+            
+            numbersContainer.appendChild(number);
         }
-      });
-    }
-  }, []);
 
-  return (
-    <div style={{ textAlign: "center", marginTop: "20px" }}>
-      <h1>Scan QR for AR Experiment</h1>
-
-      {/* QR Code */}
-      <QRCodeCanvas value="https://sburambekova.github.io/AR_new/" size={200} />
-
-      <p>Scan this QR code to see the AR number grid.</p>
-
-      {/* AR Scene */}
-      <a-scene
-        embedded
-        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false"
-        vr-mode-ui="enabled: false"
-        style={{ width: "100%", height: "400px", margin: "20px auto" }}
-      >
-        {/* White background */}
-        <a-plane
-          position="0 0 -5"
-          width="20"
-          height="20"
-          color="white"
-          material="shader: flat"
-        ></a-plane>
-
-        {/* Grid of numbers */}
-        <a-entity id="number-grid" position="0 0 -2"></a-entity>
-
-        {/* AR Camera */}
-        <a-entity camera></a-entity>
-      </a-scene>
-    </div>
-  );
-};
-
-export default ARExperiment;
+        // Add animation
+        let rotation = 0;
+        document.querySelector('a-scene').addEventListener('renderstart', () => {
+            setInterval(() => {
+                rotation += config.rotationSpeed;
+                numbersContainer.setAttribute('rotation', `0 0 ${rotation}`);
+            }, 16);
+        });
+    });
+});
 
