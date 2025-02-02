@@ -1,44 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { QRCodeCanvas } from "qrcode.react";
 
 const App = () => {
-  const [numbers, setNumbers] = useState([]);
-
-  useEffect(() => {
-    // Generate an array of numbers from 1 to 100 (increase if needed)
-    const generatedNumbers = Array.from({ length: 100 }, (_, i) => i + 1);
-    setNumbers(generatedNumbers);
-  }, []);
-
   return (
     <div style={{ textAlign: "center", marginTop: "20px" }}>
-      <h1>Scan QR for AR Text Experiment</h1>
-      <QRCodeCanvas value="https://sburambekova.github.io/AR_new" size={200} />
-      <p>Scan this QR code and look at the Hiro marker.</p>
+      <h1>Scan QR for AR Experiment</h1>
+      
+      {/* ✅ QR Code will open the AR page */}
+      <QRCodeCanvas value="https://sburambekova.github.io/AR_new/" size={200} />
 
-      {/* AR.js Scene */}
-      <a-scene embedded arjs style={{ width: "100%", height: "500px", margin: "20px auto" }}>
-        <a-marker preset="hiro">
-          <a-plane position="0 0 0" rotation="-90 0 0" width="4" height="6" color="white"></a-plane>
-          
-          {/* Display numbers in AR for readability testing */}
-          {numbers.map((num, index) => (
-            <a-text 
-              key={num}
-              value={`${num}`}
-              position={`0 ${(index * 0.4) - 2} 0`} 
-              align="center"
-              color="black"
-              scale="1.5 1.5 1"
-              width="3"
-            ></a-text>
-          ))}
-        </a-marker>
+      <p>Scan this QR code to see AR text without a marker.</p>
+
+      {/* ✅ Markerless AR: No Hiro marker required */}
+      <a-scene embedded arjs vr-mode-ui="enabled: false">
         <a-entity camera></a-entity>
+        
+        {/* Floating text in AR */}
+        <a-text 
+          value="📌 AR Text without Hiro Marker"
+          position="0 1 -3" 
+          align="center"
+          color="black"
+          scale="1.5 1.5 1"
+        ></a-text>
+
+        {/* Display Numbers Dynamically */}
+        {[...Array(50)].map((_, i) => (
+          <a-text 
+            key={i}
+            value={`${i + 1}`} 
+            position={`0 ${(i * 0.4) - 2} -3`} 
+            align="center"
+            color="blue"
+            scale="1.5 1.5 1"
+          ></a-text>
+        ))}
       </a-scene>
     </div>
   );
 };
 
 export default App;
-
