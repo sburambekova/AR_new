@@ -1,35 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta 
-      name="viewport" 
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
-    >
-    <title>AR QR Experiment</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Text Space Experiment</title>
 
-    <!-- A-Frame & AR.js (Latest Official Versions) -->
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://ar-js-org.github.io/AR.js/aframe/build/aframe-ar-nft.min.js"></script>
+    <!-- A-Frame and AR.js -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
 
-    <!-- React Root Container Styles -->
     <style>
-      body { 
-        margin: 0;
-        overflow: hidden;
-        background: #000;
-      }
-      #root {
-        width: 100vw;
-        height: 100vh;
-      }
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    
-    <!-- Optional: Load React scripts if using CRA -->
-    <!-- <script src="/static/js/bundle.js"></script> -->
-  </body>
+    <div id="root"></div> <!-- React will mount here -->
+</body>
 </html>
+
