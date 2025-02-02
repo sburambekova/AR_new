@@ -2,58 +2,56 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AR Text Space Experiment</title>
-    <!-- Use a stable version of A-Frame -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <!-- Use AR.js from jsDelivr (updated version) -->
-    <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.3.2/aframe/build/aframe-ar-nft.min.js"></script>
     <style>
       body {
         margin: 0;
         overflow: hidden;
+        background: #000;
+      }
+      a-scene {
+        width: 100vw;
+        height: 100vh;
       }
     </style>
   </head>
   <body>
-    <a-scene embedded arjs>
-      <!-- White background plane for high contrast -->
-      <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="white"></a-plane>
-      
-      <!-- Container for the grid of numbers -->
-      <a-entity id="numbers"></a-entity>
-      
-      <!-- AR Camera -->
-      <a-entity camera></a-entity>
+    <a-scene 
+      embedded 
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false"
+      renderer="logarithmicDepthBuffer: true;"
+      vr-mode-ui="enabled: false"
+    >
+      <!-- AR Camera with proper configuration -->
+      <a-entity camera="near: 0.1; far: 1000" look-controls></a-entity>
+
+      <!-- Number grid -->
+      <a-entity id="numbers" position="0 0 -1">
+        <script>
+          const rows = 8;
+          const cols = 8;
+          const spacing = 0.5;
+          
+          for(let i = 0; i < rows; i++) {
+            for(let j = 0; j < cols; j++) {
+              const number = i * cols + j + 1;
+              const text = document.createElement('a-text');
+              text.setAttribute('value', number);
+              text.setAttribute('position', {
+                x: (j - cols/2) * spacing,
+                y: (rows/2 - i) * spacing,
+                z: 0
+              });
+              text.setAttribute('color', '#000');
+              text.setAttribute('scale', '0.5 0.5 0.5');
+              document.getElementById('numbers').appendChild(text);
+            }
+          }
+        </script>
+      </a-entity>
     </a-scene>
-
-    <script>
-      // Create a 10x10 grid of numbers (100 numbers total)
-      const numbersEl = document.getElementById("numbers");
-      const rows = 10;
-      const cols = 10;
-      // We'll spread the grid over 8 units horizontally and vertically (centered around 0)
-      const spacingX = 8 / (cols - 1);
-      const spacingY = 8 / (rows - 1);
-
-      for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
-          const number = i * cols + j + 1;
-          const textEl = document.createElement("a-text");
-          textEl.setAttribute("value", number);
-          // x coordinate: from -4 to +4, y coordinate: from +4 to -4, z coordinate set to -3 (in front of the plane)
-          const x = -4 + spacingX * j;
-          const y = 4 - spacingY * i;
-          const z = -3;
-          textEl.setAttribute("position", `${x} ${y} ${z}`);
-          textEl.setAttribute("align", "center");
-          textEl.setAttribute("color", "black");
-          textEl.setAttribute("scale", "1.5 1.5 1.5");
-          numbersEl.appendChild(textEl);
-        }
-      }
-    </script>
   </body>
-</html>
-
 </html>
