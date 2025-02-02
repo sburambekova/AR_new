@@ -7,7 +7,7 @@ const App = () => {
       <h1>Scan QR for AR Experiment</h1>
       
       {/* ✅ QR Code will open the AR page */}
-      <QRCodeCanvas value="https://sburambekova.github.io/AR_new/ar-text-app/ar.html" size={200} />
+      <QRCodeCanvas value="https://sburambekova.github.io/AR_new/ar-text-app/public/ar.html" size={200} />
 
 
       <p>Scan this QR code to see AR text without a marker.</p>
