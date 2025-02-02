@@ -2,7 +2,7 @@
   "name": "ar-text-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/sburambekova/AR_new.git",
+  "homepage": "https://github.com/sburambekova/AR_new/",
   "dependencies": {
     "@ar-js-org/ar.js": "^3.4.6",
     "aframe": "^1.6.0",
