@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AR Number Visibility Test</title>
+    <title>AR Number Grid</title>
     
     <!-- A-Frame Core -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
@@ -16,13 +16,13 @@
             margin: 0;
             overflow: hidden;
         }
-        #ar-overlay {
+        #permission-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.8);
             color: white;
             display: flex;
             justify-content: center;
@@ -33,8 +33,8 @@
 </head>
 <body>
     <!-- Camera Permission Overlay -->
-    <div id="ar-overlay">
-        <h2>Please allow camera access to start AR experience</h2>
+    <div id="permission-overlay">
+        <h2>Please allow camera access to view AR numbers</h2>
     </div>
 
     <!-- AR Scene -->
@@ -43,7 +43,7 @@
         arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false"
         vr-mode-ui="enabled: false"
     >
-        <!-- AR Camera Setup -->
+        <!-- AR Camera -->
         <a-entity 
             camera="near: 0.1; far: 1000; fov: 80" 
             arjs-device-orientation-controls 
@@ -53,15 +53,14 @@
         <!-- Number Grid -->
         <a-entity id="number-grid" position="0 0 -2">
             <script>
-                // Create numbers after scene initializes
                 document.querySelector('a-scene').addEventListener('loaded', () => {
                     const grid = document.getElementById('number-grid');
                     const cols = 10;
                     const rows = 10;
                     const spacing = 0.5;
-
+                    
                     // Hide permission overlay
-                    document.getElementById('ar-overlay').style.display = 'none';
+                    document.getElementById('permission-overlay').style.display = 'none';
 
                     // Create number grid
                     for(let i = 0; i < rows; i++) {
