@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Moving AR Numbers</title>
-    
-    <!-- Required Libraries -->
+    <title>AR Numbers Experience</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script src="js/ARExperiment.js"></script>
-
     <style>
         body { margin: 0; overflow: hidden; }
         #loading {
@@ -20,20 +16,89 @@
             color: white;
             text-align: center;
             z-index: 9999;
+            font-family: Arial;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
-    <div id="loading">Initializing AR... Allow camera and motion access</div>
+    <div id="loading">Point camera at a flat surface<br><small>Loading AR numbers...</small></div>
     
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
-        <!-- Moving Numbers Container -->
-        <a-entity id="numbers-container"></a-entity>
-        
         <!-- AR Camera -->
-        <a-entity camera arjs-device-orientation-controls look-controls>
-            <a-entity position="0 0 0"></a-entity>
-        </a-entity>
+        <a-entity camera="near: 0.1; far: 1000" arjs-device-orientation-controls look-controls="enabled: false"></a-entity>
+
+        <!-- Numbers Container -->
+        <a-entity id="numbers-container" position="0 0 -2"></a-entity>
     </a-scene>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const scene = document.querySelector('a-scene');
+        const loading = document.getElementById('loading');
+        const numbersContainer = document.getElementById('numbers-container');
+
+        // Create grid of numbers
+        function createNumberGrid() {
+            const rows = 5;
+            const cols = 5;
+            const spacing = 0.8;
+
+            for(let i = 0; i < rows; i++) {
+                for(let j = 0; j < cols; j++) {
+                    const number = document.createElement('a-text');
+                    const num = i * cols + j + 1;
+                    
+                    number.setAttribute('value', num);
+                    number.setAttribute('position', {
+                        x: (j - cols/2) * spacing,
+                        y: (rows/2 - i) * spacing,
+                        z: 0
+                    });
+                    number.setAttribute('color', '#00FF00');
+                    number.setAttribute('scale', '0.5 0.5 0.5');
+                    number.setAttribute('align', 'center');
+                    number.setAttribute('look-at', '[camera]');
+                    number.setAttribute('animation', {
+                        property: 'scale',
+                        to: '0.8 0.8 0.8',
+                        dir: 'alternate',
+                        dur: 2000,
+                        loop: true
+                    });
+                    
+                    numbersContainer.appendChild(number);
+                }
+            }
+        }
+
+        // Initialize AR
+        scene.addEventListener('arjs-initialized', () => {
+            loading.textContent = 'AR ready - loading numbers...';
+            createNumberGrid();
+            loading.style.display = 'none';
+        });
+
+        // Error handling
+        scene.addEventListener('arjs-error', (error) => {
+            loading.textContent = `Error: ${error.detail.error}`;
+            console.error('AR Error:', error.detail);
+        });
+
+        // iOS permission handling
+        if (typeof DeviceOrientationEvent !== 'undefined' && 
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+            loading.textContent = 'Tap screen to allow motion access';
+            document.addEventListener('click', () => {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permission => {
+                        if (permission === 'granted') {
+                            loading.textContent = 'Initializing AR...';
+                        }
+                    });
+            }, { once: true });
+        }
+    });
+    </script>
 </body>
 </html>
