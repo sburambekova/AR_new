@@ -1,44 +1,71 @@
-//ARExperiment.js (No Motion Permissions)
-//Initialize AR scene after component mounts
-import React, { useEffect } from "react";
-// import { QRCodeCanvas } from "qrcode.react";
+document.addEventListener('DOMContentLoaded', () => {
+    const scene = document.querySelector('a-scene');
+    const loading = document.getElementById('loading');
+    let initialized = false;
 
-const App = () => {  
-useEffect(() => {
-    // Add AR.js script dynamically
-    const script = document.createElement('script');
-    script.src = "https://ar-js-org.github.io/AR.js/aframe/build/aframe-ar.min.js";
-    document.body.appendChild(script);
+    // New: Add tap-to-start overlay
+    const tapOverlay = document.createElement('div');
+    tapOverlay.style = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    `;
+    tapOverlay.innerHTML = `<h3>Tap anywhere to start AR experience</h3>`;
+    
+    // New: Handle iOS permission flow
+    function startAR() {
+        // Remove tap overlay
+        tapOverlay.remove();
+        
+        // iOS Motion Permission Flow
+        if (typeof DeviceOrientationEvent !== 'undefined' && 
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+            
+            loading.textContent = 'Please allow motion access in the next dialog...';
+            
+            DeviceOrientationEvent.requestPermission()
+                .then(permission => {
+                    if (permission === 'granted') {
+                        initializeAR();
+                    } else {
+                        loading.textContent = 'Motion access required - reload and allow permissions';
+                    }
+                })
+                .catch(error => {
+                    console.error('Permission error:', error);
+                    loading.textContent = 'Error requesting motion access';
+                });
+        } else {
+            initializeAR();
+        }
+    }
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+    // Existing initialization code
+    function initializeAR() {
+        // Your existing AR initialization code
+        loading.remove();
+        // Create numbers, setup motion listeners, etc...
+    }
 
-  return (
-    <div style={{ textAlign: "center", marginTop: "20px" }}>
-      {/* AR Scene */}
-      <a-scene 
-        embedded 
-        arjs="sourceType: webcam; debugUIEnabled: false"
-        vr-mode-ui="enabled: false"
-        style={{ width: '100%', height: '400px' }}
-      >
-        {/* Camera setup */}
-        <a-camera gps-camera rotation-reader></a-camera>
+    // Show tap overlay on iOS
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        document.body.appendChild(tapOverlay);
+        document.addEventListener('click', startAR, { once: true });
+    } else {
+        initializeAR();
+    }
 
-        {/* Number sequence */}
-        {[...Array(100)].map((_, i) => (
-          <a-text 
-            key={i}
-            value={`${i + 1}`} 
-            position={`${(i % 10) * 0.5 - 2} ${Math.floor(i / 10) * -0.5 + 1} -3`}
-            align="center"
-            color="blue"
-            scale="0.8 0.8 0.8"
-          ></a-text>
-        ))}
-      </a-scene>
-    </div>
-
-)};
+    // Error handling
+    scene.addEventListener('arjs-error', (error) => {
+        console.error('AR Error:', error.detail);
+        loading.textContent = `AR Error: ${error.detail.error}`;
+    });
+});
