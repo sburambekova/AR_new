@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/AR_new/ar-text-app/static/css/main.e6c13ad2.css",
+    "main.js": "/AR_new/ar-text-app/static/js/main.392eb2ef.js",
+    "static/js/488.9705022a.chunk.js": "/AR_new/ar-text-app/static/js/488.9705022a.chunk.js",
+    "index.html": "/AR_new/ar-text-app/index.html",
+    "main.e6c13ad2.css.map": "/AR_new/ar-text-app/static/css/main.e6c13ad2.css.map",
+    "main.392eb2ef.js.map": "/AR_new/ar-text-app/static/js/main.392eb2ef.js.map",
+    "488.9705022a.chunk.js.map": "/AR_new/ar-text-app/static/js/488.9705022a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.392eb2ef.js"
+  ]
+}
