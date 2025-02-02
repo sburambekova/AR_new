@@ -1,76 +1,44 @@
-// ARExperiment.js
-document.addEventListener('DOMContentLoaded', () => {
-    const scene = document.querySelector('a-scene');
-    const loading = document.getElementById('loading');
-    let initialized = false;
+//ARExperiment.js (No Motion Permissions)
+//Initialize AR scene after component mounts
+import React, { useEffect } from "react";
+// import { QRCodeCanvas } from "qrcode.react";
 
-    // Update loading message states
-    function updateLoading(text) {
-        loading.innerHTML = text;
-    }
+const App = () => {  
+useEffect(() => {
+    // Add AR.js script dynamically
+    const script = document.createElement('script');
+    script.src = "https://ar-js-org.github.io/AR.js/aframe/build/aframe-ar.min.js";
+    document.body.appendChild(script);
 
-    // 1. Handle camera access
-    scene.addEventListener('arjs-video-loaded', () => {
-        updateLoading('Camera ready - waiting for motion permissions...');
-        
-        // 2. Request device motion permissions (iOS specific)
-        if (typeof DeviceOrientationEvent !== 'undefined' && 
-            typeof DeviceOrientationEvent.requestPermission === 'function') {
-            DeviceOrientationEvent.requestPermission()
-                .then(permission => {
-                    if (permission === 'granted') {
-                        initializeAR();
-                    } else {
-                        updateLoading('Motion access required - reload and allow permissions');
-                    }
-                })
-                .catch(error => {
-                    console.error('Permission error:', error);
-                    updateLoading('Error: ' + error.message);
-                });
-        } else {
-            initializeAR();
-        }
-    });
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
-    // 3. Initialize AR after permissions
-    function initializeAR() {
-        updateLoading('Initializing AR experience...');
-        
-        // Create numbers
-        const numbersContainer = document.createElement('a-entity');
-        for(let i = 0; i < 100; i++) {
-            const number = document.createElement('a-text');
-            number.setAttribute('value', i+1);
-            number.setAttribute('position', {
-                x: (Math.random() - 0.5) * 4,
-                y: (Math.random() - 0.5) * 3,
-                z: -3
-            });
-            number.setAttribute('color', `hsl(${(i/100)*360}, 100%, 50%)`);
-            number.setAttribute('scale', '0.5 0.5 0.5');
-            number.setAttribute('look-at', '[camera]');
-            numbersContainer.appendChild(number);
-        }
-        scene.appendChild(numbersContainer);
+  return (
+    <div style={{ textAlign: "center", marginTop: "20px" }}>
+      {/* AR Scene */}
+      <a-scene 
+        embedded 
+        arjs="sourceType: webcam; debugUIEnabled: false"
+        vr-mode-ui="enabled: false"
+        style={{ width: '100%', height: '400px' }}
+      >
+        {/* Camera setup */}
+        <a-camera gps-camera rotation-reader></a-camera>
 
-        // 4. Final initialization
-        scene.addEventListener('arjs-initialized', () => {
-            initialized = true;
-            loading.remove();
-        });
-    }
+        {/* Number sequence */}
+        {[...Array(100)].map((_, i) => (
+          <a-text 
+            key={i}
+            value={`${i + 1}`} 
+            position={`${(i % 10) * 0.5 - 2} ${Math.floor(i / 10) * -0.5 + 1} -3`}
+            align="center"
+            color="blue"
+            scale="0.8 0.8 0.8"
+          ></a-text>
+        ))}
+      </a-scene>
+    </div>
 
-    // 5. Error handling
-    scene.addEventListener('arjs-error', (event) => {
-        console.error('AR Error:', event.detail);
-        updateLoading(`AR Error: ${event.detail.error}`);
-    });
-
-    // Timeout fallback
-    setTimeout(() => {
-        if (!initialized) {
-            updateLoading('Initialization timeout - check permissions and reload');
-        }
-    }, 10000);
-});
+)};
