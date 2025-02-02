@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Number Filling Experiment</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://ar-js-org.github.io/AR.js/aframe/build/aframe-ar.min.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs="sourceType: webcam;">
+        <!-- Numbers Container -->
+        <a-entity id="numbers"></a-entity>
+
+        <!-- AR Camera -->
+        <a-camera gps-camera rotation-reader></a-camera>
+    </a-scene>
+
+    <script>
+        // Get the numbers container
+        let numbers = document.getElementById("numbers");
+        let totalNumbers = 50;
+
+        // Spread numbers in a grid pattern
+        let rows = 5; // Number of rows
+        let cols = 10; // Number of columns
+        let spacing = 0.5; // Space between numbers
+
+        for (let i = 1; i <= totalNumbers; i++) {
+            let text = document.createElement("a-text");
+            text.setAttribute("value", i.toString());
+            text.setAttribute("align", "center");
+            text.setAttribute("color", "black");
+            text.setAttribute("scale", "0.5 0.5 0.5"); // Adjust scale for better visibility
+
+            // Calculate position in a grid
+            let row = Math.floor((i - 1) / cols);
+            let col = (i - 1) % cols;
+            text.setAttribute("position", `${col * spacing - (cols * spacing) / 2} ${row * -spacing} -2`);
+
+            // Add the number to the scene
+            numbers.appendChild(text);
+        }
+    </script>
+</body>
+</html>
