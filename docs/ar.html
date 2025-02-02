@@ -51,13 +51,13 @@
         ></a-entity>
 
         <!-- Number Grid -->
-        <a-entity id="number-grid" position="0 0 -2">
+        <a-entity id="number-grid" position="0 0 -1">
             <script>
                 document.querySelector('a-scene').addEventListener('loaded', () => {
                     const grid = document.getElementById('number-grid');
                     const cols = 10;
                     const rows = 10;
-                    const spacing = 0.5;
+                    const spacing = 0.3; // Reduced spacing for a tighter grid
                     
                     // Hide permission overlay
                     document.getElementById('permission-overlay').style.display = 'none';
@@ -74,7 +74,7 @@
                                 z: 0
                             });
                             text.setAttribute('color', '#FF0000');
-                            text.setAttribute('scale', '0.8 0.8 0.8');
+                            text.setAttribute('scale', '0.5 0.5 0.5'); // Smaller numbers
                             grid.appendChild(text);
                         }
                     }
