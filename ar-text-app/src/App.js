@@ -13,7 +13,7 @@ const App = () => {
   return (
     <div style={{ textAlign: "center", marginTop: "20px" }}>
       <h1>Scan QR for AR Text Experiment</h1>
-      <QRCodeCanvas value="https://github.com/sburambekova/AR_new.git" size={200} />
+      <QRCodeCanvas value="https://sburambekova.github.io/AR_new" size={200} />
       <p>Scan this QR code and look at the Hiro marker.</p>
 
       {/* AR.js Scene */}
