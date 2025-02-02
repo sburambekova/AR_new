@@ -1,106 +1,86 @@
 // ar-numbers.js
-// AR Number Experience - Camera-Relative Numbers
+// AR Number Experience - Device Motion Controlled
 
-// Configuration Object
 const ARConfig = {
-    totalNumbers: 64,      // Total numbers to display
-    circleRadius: 1.5,     // Radius of number circle (meters)
-    baseScale: 0.25,       // Base size of numbers
-    rotationSpeed: 0.5,    // Rotation speed (degrees per frame)
-    colors: {              // Color settings
+    totalNumbers: 64,
+    sphereRadius: 2.0,
+    baseScale: 0.3,
+    movementFactor: 0.1,
+    colors: {
         hueStart: 0,
         hueEnd: 360,
         saturation: 100,
         lightness: 50
-    },
-    positionOffset: {      // Position relative to camera
-        x: 0,
-        y: 0,
-        z: -1
     }
 };
 
-// Initialize AR Experience
 function initARExperience() {
-    // Get scene element
     const scene = document.querySelector('a-scene');
-    
-    // Create numbers container
     const numbersContainer = document.createElement('a-entity');
     numbersContainer.setAttribute('id', 'ar-numbers-container');
-    numbersContainer.setAttribute('position', 
-        `${ARConfig.positionOffset.x} ${ARConfig.positionOffset.y} ${ARConfig.positionOffset.z}`
-    );
-    
-    // Create numbers in circular pattern
+
+    // Create numbers in spherical pattern
     for(let i = 0; i < ARConfig.totalNumbers; i++) {
-        const angle = (i / ARConfig.totalNumbers) * Math.PI * 2;
-        const x = Math.cos(angle) * ARConfig.circleRadius;
-        const y = Math.sin(angle) * ARConfig.circleRadius;
+        const phi = Math.acos(-1 + (2 * i) / ARConfig.totalNumbers);
+        const theta = Math.sqrt(ARConfig.totalNumbers * Math.PI) * phi;
         
-        const number = createNumberElement(i + 1, x, y);
+        const x = ARConfig.sphereRadius * Math.cos(theta) * Math.sin(phi);
+        const y = ARConfig.sphereRadius * Math.sin(theta) * Math.sin(phi);
+        const z = ARConfig.sphereRadius * Math.cos(phi);
+        
+        const number = createNumberElement(i + 1, x, y, z);
         numbersContainer.appendChild(number);
     }
-    
-    // Add animation system
-    let rotation = 0;
-    scene.addEventListener('renderstart', () => {
-        scene.addEventListener('oneframe', (e) => {
-            rotation += ARConfig.rotationSpeed;
-            numbersContainer.setAttribute('rotation', `0 0 ${rotation}`);
-        });
-    });
 
-    // Add to camera rig
-    const cameraRig = document.querySelector('#camera-rig');
-    cameraRig.appendChild(numbersContainer);
+    scene.appendChild(numbersContainer);
+
+    // Add device motion handling
+    let beta = 0, gamma = 0;
+    window.addEventListener('deviceorientation', (event) => {
+        beta = event.beta * ARConfig.movementFactor; // Front/back tilt
+        gamma = event.gamma * ARConfig.movementFactor; // Left/right tilt
+        
+        numbersContainer.setAttribute('rotation', 
+            `${beta} ${gamma} 0`
+        );
+    });
 }
 
-// Create Individual Number Element
-function createNumberElement(value, x, y) {
+function createNumberElement(value, x, y, z) {
     const number = document.createElement('a-text');
-    const hue = (value / ARConfig.totalNumbers) * 
-               (ARConfig.colors.hueEnd - ARConfig.colors.hueStart) + 
-               ARConfig.colors.hueStart;
+    const hue = (value / ARConfig.totalNumbers) * 360;
     
     number.setAttribute('value', value);
-    number.setAttribute('position', `${x} ${y} 0`);
-    number.setAttribute('color', `hsl(${hue}, ${ARConfig.colors.saturation}%, ${ARConfig.colors.lightness}%)`);
+    number.setAttribute('position', `${x} ${y} ${z}`);
+    number.setAttribute('color', `hsl(${hue}, 100%, 50%)`);
     number.setAttribute('scale', `${ARConfig.baseScale} ${ARConfig.baseScale} ${ARConfig.baseScale}`);
     number.setAttribute('look-at', '[camera]');
-    number.setAttribute('class', 'ar-number');
-    
-    // Add click interaction
-    number.addEventListener('click', () => {
-        number.setAttribute('scale', '0.4 0.4 0.4');
-        setTimeout(() => {
-            number.setAttribute('scale', `${ARConfig.baseScale} ${ARConfig.baseScale} ${ARConfig.baseScale}`);
-        }, 200);
+    number.setAttribute('animation', {
+        property: 'scale',
+        to: `${ARConfig.baseScale * 1.5} ${ARConfig.baseScale * 1.5} ${ARConfig.baseScale * 1.5}`,
+        dir: 'alternate',
+        dur: 2000,
+        loop: true
     });
-    
+
     return number;
 }
 
-// Wait for AR.js to initialize
 document.addEventListener('DOMContentLoaded', () => {
-    // Remove loading message
-    const loading = document.getElementById('loading');
-    if(loading) loading.remove();
-    
-    // Error handling
+    document.getElementById('loading').remove();
     const scene = document.querySelector('a-scene');
-    scene.addEventListener('arjs-error', (error) => {
-        console.error('AR.js Error:', error.detail);
-        alert('AR initialization failed: ' + error.detail);
-    });
-
-    // Start experience when ready
+    
     scene.addEventListener('arjs-initialized', () => {
-        try {
+        if (typeof DeviceOrientationEvent !== 'undefined' && 
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission()
+                .then(permission => {
+                    if (permission === 'granted') {
+                        initARExperience();
+                    }
+                });
+        } else {
             initARExperience();
-        } catch(error) {
-            console.error('AR Experience Error:', error);
-            alert('Failed to initialize AR experience');
         }
     });
 });
