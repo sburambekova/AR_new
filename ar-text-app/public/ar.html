@@ -1,73 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Keep previous head content -->
-    <style>
-        /* ✅ Fix camera feed visibility */
-        a-scene {
-            width: 100vw;
-            height: 100vh;
-            display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 0;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AR Floating Numbers</title>
 
-        /* ✅ Make numbers more visible */
-        a-text {
-            opacity: 0.9;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    <!-- A-Frame Core -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    
+    <!-- AR.js for Markerless AR -->
+    <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
+
+    <style>
+        body { margin: 0; overflow: hidden; background-color: black; } 
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            z-index: 9999;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
 <body>
-    <!-- Previous body content remains -->
-    
+
+    <!-- Loading Message -->
+    <div id="loading">🔄 Loading AR Numbers...</div>
+
+    <!-- AR Scene -->
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
+        <!-- Camera Setup -->
+        <a-camera position="0 0 0"></a-camera>
+
+        <!-- ✅ The Numbers Container -->
+        <a-entity id="numbers-container"></a-entity>
+    </a-scene>
+
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const scene = document.querySelector('a-scene');
-        const numbersContainer = document.getElementById('numbers-container');
-        const loading = document.getElementById('loading');
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("📌 AR Page Loaded");
+            const scene = document.querySelector('a-scene');
+            const numbersContainer = document.getElementById('numbers-container');
+            const loading = document.getElementById('loading');
 
-        // ✅ Proper AR initialization
-        scene.addEventListener('arjs-initialized', () => {
-            // Create numbers
-            const totalNumbers = 30;
-            const baseZ = -3;
-            
-            for(let i = 0; i < totalNumbers; i++) {
-                const number = document.createElement('a-text');
-                number.setAttribute('value', i+1);
-                number.setAttribute('position', {
-                    x: (Math.random() - 0.5) * 5,
-                    y: (Math.random() - 0.5) * 3,
-                    z: baseZ + (Math.random() * 2)
-                });
-                number.setAttribute('color', `hsl(${(i/totalNumbers)*360}, 100%, 50%)`);
-                number.setAttribute('scale', '0.5 0.5 0.5');
-                number.setAttribute('look-at', '[camera]');
-                
-                // ✅ Better animation
-                number.setAttribute('animation', {
-                    property: 'position',
-                    to: `${(Math.random() - 0.5) * 5} ${(Math.random() - 0.5) * 3} ${baseZ + (Math.random() * 2)}`,
-                    dur: 3000 + Math.random() * 3000,
-                    easing: 'easeInOutQuad',
-                    loop: true
-                });
+            function createFloatingNumbers() {
+                console.log("✅ Generating Numbers...");
+                const totalNumbers = 50;
+                const baseZ = -2; // Move numbers closer
 
-                numbersContainer.appendChild(number);
+                for (let i = 0; i < totalNumbers; i++) {
+                    const number = document.createElement('a-text');
+                    number.setAttribute('value', i + 1);
+                    number.setAttribute('position', {
+                        x: (Math.random() * 6) - 3,
+                        y: (Math.random() * 6) - 3,
+                        z: baseZ
+                    });
+                    number.setAttribute('color', 'white');
+                    number.setAttribute('scale', '1.5 1.5 1'); // Bigger numbers for visibility
+                    number.setAttribute('align', 'center');
+
+                    // ✅ Floating Animation
+                    number.setAttribute('animation', {
+                        property: 'position',
+                        to: `${(Math.random() * 6) - 3} ${(Math.random() * 6) - 3} ${baseZ}`,
+                        dur: 4000 + Math.random() * 3000,
+                        easing: 'linear',
+                        loop: true
+                    });
+
+                    numbersContainer.appendChild(number);
+                }
+
+                console.log("✅ Numbers added to AR Scene");
             }
-            
-            loading.style.display = 'none';
-        });
 
-        // ✅ Error handling
-        scene.addEventListener('arjs-error', (error) => {
-            loading.innerHTML = `AR Error: ${error.detail.error}<br>Refresh the page`;
+            // ✅ Ensure AR.js is Initialized Properly
+            scene.addEventListener('loaded', () => {
+                console.log("🎯 AR Scene Loaded Successfully");
+                loading.style.display = 'none';
+                createFloatingNumbers();
+            });
+
+            // ✅ Error Handling
+            scene.addEventListener('arjs-error', (error) => {
+                console.error("⚠️ AR.js Error:", error.detail.error);
+                loading.textContent = `AR.js Error: ${error.detail.error}`;
+            });
         });
-    });
     </script>
+
 </body>
 </html>
