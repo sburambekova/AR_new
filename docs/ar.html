@@ -5,43 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AR Floating Numbers</title>
 
-    <!-- ✅ A-Frame Core -->
+    <!-- A-Frame Core -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     
-    <!-- ✅ Stable AR.js for Markerless Tracking -->
+    <!-- AR.js for Markerless AR -->
     <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
 
     <style>
-        body { 
-            margin: 0; 
-            overflow: hidden; 
-            background-color: black; /* Ensures full black background */
-        }
+        body { margin: 0; overflow: hidden; background-color: black; } 
         #loading {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            text-align: center;
             font-size: 18px;
+            text-align: center;
             z-index: 9999;
             font-family: Arial, sans-serif;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
 <body>
 
-    <!-- Loading screen -->
-    <div id="loading">🔄 Loading AR Numbers... Please Wait</div>
+    <!-- Loading Message -->
+    <div id="loading">🔄 Loading AR Numbers...</div>
 
     <!-- AR Scene -->
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
-        <!-- ✅ Camera Setup -->
+        <!-- Camera Setup -->
         <a-camera position="0 0 0"></a-camera>
 
-        <!-- ✅ Floating Numbers -->
+        <!-- ✅ The Missing Numbers Container -->
         <a-entity id="numbers-container"></a-entity>
     </a-scene>
 
@@ -52,26 +47,26 @@
             const loading = document.getElementById('loading');
 
             function createFloatingNumbers() {
-                const totalNumbers = 50;  // Increase for more
-                const spacing = 1.2;
+                const totalNumbers = 30;
+                const baseZ = -2; // ✅ Move numbers closer
 
-                for(let i = 0; i < totalNumbers; i++) {
+                for (let i = 0; i < totalNumbers; i++) {
                     const number = document.createElement('a-text');
                     number.setAttribute('value', i + 1);
                     number.setAttribute('position', {
-                        x: (Math.random() * 6) - 3,  // Random x position
-                        y: (Math.random() * 6) - 3,  // Random y position
-                        z: -3  // Distance from camera
+                        x: (Math.random() * 6) - 3,
+                        y: (Math.random() * 6) - 3,
+                        z: baseZ
                     });
-                    number.setAttribute('color', 'white'); // ✅ White text for visibility
-                    number.setAttribute('scale', '2 2 2');
+                    number.setAttribute('color', 'white');
+                    number.setAttribute('scale', '1.5 1.5 1'); // ✅ Bigger numbers for visibility
                     number.setAttribute('align', 'center');
 
-                    // ✅ Animation: Slow Floating Movement
+                    // ✅ Looping floating animation
                     number.setAttribute('animation', {
                         property: 'position',
-                        to: `${(Math.random() * 6) - 3} ${(Math.random() * 6) - 3} -3`,
-                        dur: 5000 + Math.random() * 3000, // Slow movement
+                        to: `${(Math.random() * 6) - 3} ${(Math.random() * 6) - 3} ${baseZ}`,
+                        dur: 4000 + Math.random() * 3000,
                         easing: 'linear',
                         loop: true
                     });
@@ -82,7 +77,7 @@
 
             // ✅ Load numbers after AR.js initializes
             scene.addEventListener('loaded', () => {
-                loading.style.display = 'none'; // Hide loading message
+                loading.style.display = 'none';
                 createFloatingNumbers();
             });
         });
@@ -90,4 +85,3 @@
 
 </body>
 </html>
-
