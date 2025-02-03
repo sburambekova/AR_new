@@ -64,7 +64,7 @@ import React from "react";
 import { QRCodeCanvas } from "qrcode.react";
 
 const App = () => {
-  // Replace with your actual deployment URL
+ 
   const arPageUrl = "https://sburambekova.github.io/AR_new/ar.html";
 
   return (
