@@ -22,13 +22,12 @@ const App = () => {
         }
         createNumbers();
 
-        // ✅ Fix: Request Motion Permission for iOS (Required for AR on Mobile)
         function requestMotionPermission() {
           if (
-            typeof DeviceOrientationEvent !== "undefined" &&
-            typeof DeviceOrientationEvent.requestPermission === "function"
+            typeof DeviceMotionEvent !== "undefined" &&
+            typeof DeviceMotionEvent.requestPermission === "function"
           ) {
-            DeviceOrientationEvent.requestPermission()
+            DeviceMotionEvent.requestPermission()
               .then((permission) => {
                 if (permission === "granted") {
                   console.log("Motion permission granted");
@@ -43,15 +42,26 @@ const App = () => {
         }
 
         function setupMotionTracking() {
-          window.addEventListener("deviceorientation", (event) => {
-            let beta = event.beta / 20; // Front-Back tilt
-            let gamma = event.gamma / 20; // Left-Right tilt
+          console.log("✅ Motion tracking started!");
 
-            container.setAttribute("position", `${gamma} ${beta} -3`);
+          // ✅ Use device motion & orientation to detect movement
+          window.addEventListener("devicemotion", (event) => {
+            let accX = event.accelerationIncludingGravity.x || 0;
+            let accY = event.accelerationIncludingGravity.y || 0;
+
+            console.log(`📌 Motion detected: accX=${accX}, accY=${accY}`);
+            container.setAttribute("position", `${accX / 10} ${accY / 10} -3`);
+          });
+
+          window.addEventListener("deviceorientation", (event) => {
+            let beta = event.beta || 0; // Forward-Back tilt
+            let gamma = event.gamma || 0; // Left-Right tilt
+
+            console.log(`📌 Orientation detected: beta=${beta}, gamma=${gamma}`);
+            container.setAttribute("position", `${gamma / 20} ${beta / 20} -3`);
           });
         }
 
-        // ✅ Call permission function when user interacts
         document.addEventListener("click", requestMotionPermission, {
           once: true,
         });
