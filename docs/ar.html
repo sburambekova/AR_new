@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AR Floating Numbers</title>
 
-    <!-- A-Frame Core -->
+    <!-- ✅ A-Frame Core -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     
-    <!-- ✅ Stable AR.js (No Hiro Marker Required) -->
+    <!-- ✅ Stable AR.js for Markerless Tracking -->
     <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
 
     <style>
-        body { margin: 0; overflow: hidden; background-color: black; }
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: black; /* Ensures full black background */
+        }
         #loading {
             position: fixed;
             top: 50%;
@@ -20,21 +24,24 @@
             transform: translate(-50%, -50%);
             color: white;
             text-align: center;
+            font-size: 18px;
             z-index: 9999;
-            font-family: Arial;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            font-family: Arial, sans-serif;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
 <body>
 
-    <div id="loading">Initializing AR...<br><small>Please wait</small></div>
+    <!-- Loading screen -->
+    <div id="loading">🔄 Loading AR Numbers... Please Wait</div>
 
+    <!-- AR Scene -->
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
-        <!-- ✅ Camera Setup (No motion permission required) -->
+        <!-- ✅ Camera Setup -->
         <a-camera position="0 0 0"></a-camera>
 
-        <!-- ✅ Container for AR Numbers -->
+        <!-- ✅ Floating Numbers -->
         <a-entity id="numbers-container"></a-entity>
     </a-scene>
 
@@ -44,7 +51,7 @@
             const numbersContainer = document.getElementById('numbers-container');
             const loading = document.getElementById('loading');
 
-            function createNumberGrid() {
+            function createFloatingNumbers() {
                 const totalNumbers = 50;  // Increase for more
                 const spacing = 1.2;
 
@@ -56,15 +63,15 @@
                         y: (Math.random() * 6) - 3,  // Random y position
                         z: -3  // Distance from camera
                     });
-                    number.setAttribute('color', 'white');
+                    number.setAttribute('color', 'white'); // ✅ White text for visibility
                     number.setAttribute('scale', '2 2 2');
                     number.setAttribute('align', 'center');
 
-                    // ✅ Animation: Moving effect
+                    // ✅ Animation: Slow Floating Movement
                     number.setAttribute('animation', {
                         property: 'position',
                         to: `${(Math.random() * 6) - 3} ${(Math.random() * 6) - 3} -3`,
-                        dur: 3000 + Math.random() * 2000, 
+                        dur: 5000 + Math.random() * 3000, // Slow movement
                         easing: 'linear',
                         loop: true
                     });
@@ -73,13 +80,14 @@
                 }
             }
 
-            // ✅ Load numbers when scene is ready
+            // ✅ Load numbers after AR.js initializes
             scene.addEventListener('loaded', () => {
-                createNumberGrid();
-                loading.style.display = 'none';
+                loading.style.display = 'none'; // Hide loading message
+                createFloatingNumbers();
             });
         });
     </script>
 
 </body>
 </html>
+
