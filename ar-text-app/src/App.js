@@ -22,12 +22,38 @@ const App = () => {
         }
         createNumbers();
 
-        // Move numbers based on device motion
-        window.addEventListener("deviceorientation", (event) => {
-          let beta = event.beta / 20; // Front-Back tilt
-          let gamma = event.gamma / 20; // Left-Right tilt
+        // ✅ Fix: Request Motion Permission for iOS (Required for AR on Mobile)
+        function requestMotionPermission() {
+          if (
+            typeof DeviceOrientationEvent !== "undefined" &&
+            typeof DeviceOrientationEvent.requestPermission === "function"
+          ) {
+            DeviceOrientationEvent.requestPermission()
+              .then((permission) => {
+                if (permission === "granted") {
+                  console.log("Motion permission granted");
+                  setupMotionTracking();
+                }
+              })
+              .catch(console.error);
+          } else {
+            console.log("Motion permission not required");
+            setupMotionTracking();
+          }
+        }
 
-          container.setAttribute("position", `${gamma} ${beta} -3`);
+        function setupMotionTracking() {
+          window.addEventListener("deviceorientation", (event) => {
+            let beta = event.beta / 20; // Front-Back tilt
+            let gamma = event.gamma / 20; // Left-Right tilt
+
+            container.setAttribute("position", `${gamma} ${beta} -3`);
+          });
+        }
+
+        // ✅ Call permission function when user interacts
+        document.addEventListener("click", requestMotionPermission, {
+          once: true,
         });
       }
     }, 500);
@@ -36,7 +62,7 @@ const App = () => {
   return (
     <div style={{ textAlign: "center", marginTop: "20px" }}>
       <h1>AR Experiment: Moving Numbers</h1>
-      <p>Move your phone to see numbers shift dynamically.</p>
+      <p>Tap the screen to enable motion controls.</p>
 
       {/* ✅ Inject A-Frame AR scene */}
       <div
