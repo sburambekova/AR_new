@@ -36,19 +36,21 @@
         <!-- Camera Setup -->
         <a-camera position="0 0 0"></a-camera>
 
-        <!-- ✅ The Missing Numbers Container -->
+        <!-- ✅ The Numbers Container -->
         <a-entity id="numbers-container"></a-entity>
     </a-scene>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            console.log("📌 AR Page Loaded");
             const scene = document.querySelector('a-scene');
             const numbersContainer = document.getElementById('numbers-container');
             const loading = document.getElementById('loading');
 
             function createFloatingNumbers() {
-                const totalNumbers = 30;
-                const baseZ = -2; // ✅ Move numbers closer
+                console.log("✅ Generating Numbers...");
+                const totalNumbers = 50;
+                const baseZ = -2; // Move numbers closer
 
                 for (let i = 0; i < totalNumbers; i++) {
                     const number = document.createElement('a-text');
@@ -59,10 +61,10 @@
                         z: baseZ
                     });
                     number.setAttribute('color', 'white');
-                    number.setAttribute('scale', '1.5 1.5 1'); // ✅ Bigger numbers for visibility
+                    number.setAttribute('scale', '1.5 1.5 1'); // Bigger numbers for visibility
                     number.setAttribute('align', 'center');
 
-                    // ✅ Looping floating animation
+                    // ✅ Floating Animation
                     number.setAttribute('animation', {
                         property: 'position',
                         to: `${(Math.random() * 6) - 3} ${(Math.random() * 6) - 3} ${baseZ}`,
@@ -73,12 +75,21 @@
 
                     numbersContainer.appendChild(number);
                 }
+
+                console.log("✅ Numbers added to AR Scene");
             }
 
-            // ✅ Load numbers after AR.js initializes
+            // ✅ Ensure AR.js is Initialized Properly
             scene.addEventListener('loaded', () => {
+                console.log("🎯 AR Scene Loaded Successfully");
                 loading.style.display = 'none';
                 createFloatingNumbers();
+            });
+
+            // ✅ Error Handling
+            scene.addEventListener('arjs-error', (error) => {
+                console.error("⚠️ AR.js Error:", error.detail.error);
+                loading.textContent = `AR.js Error: ${error.detail.error}`;
             });
         });
     </script>
